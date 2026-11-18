@@ -1,0 +1,16 @@
+{
+  "name": "acortador-url",
+  "version": "1.0.0",
+  "description": "Acortador de URLs con API, redirección configurable 301/302 y estadísticas por día, país y referente.",
+  "type": "module",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js",
+    "load": "node scripts/load-test.mjs",
+    "load:compare": "node scripts/compare-modes.mjs"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}

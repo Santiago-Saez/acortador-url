@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="es">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Acortador de URLs</title>
+<style>
+  body { font-family: system-ui, sans-serif; max-width: 640px; margin: 2rem auto; padding: 0 1rem; }
+  input, button { padding: .5rem; font-size: 1rem; }
+  form > * { display: block; width: 100%; box-sizing: border-box; margin: .4rem 0; }
+  pre { background: #f4f4f4; padding: 1rem; overflow: auto; }
+  .row { display: flex; gap: .5rem; } .row > * { flex: 1; }
+</style>
+<h1>Acortador de URLs</h1>
+<form id="f">
+  <input id="url" type="url" placeholder="https://ejemplo.com/articulo" required>
+  <div class="row">
+    <input id="expires" type="number" min="0" placeholder="Expira en segundos (opcional)">
+    <input id="password" type="password" placeholder="Contraseña (opcional)">
+  </div>
+  <button>Acortar</button>
+</form>
+<p id="out"></p>
+<h2>Estadísticas</h2>
+<form id="s">
+  <input id="code" placeholder="código (7 caracteres)">
+  <button>Ver stats</button>
+</form>
+<pre id="stats">—</pre>
+<script>
+const f = document.getElementById('f'), out = document.getElementById('out');
+f.onsubmit = async (e) => {
+  e.preventDefault();
+  const body = { url: document.getElementById('url').value };
+  const ex = document.getElementById('expires').value;
+  const pw = document.getElementById('password').value;
+  if (ex) body.expiresInSeconds = Number(ex);
+  if (pw) body.password = pw;
+  const r = await fetch('/links', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(body) });
+  const j = await r.json();
+  out.innerHTML = r.ok ? `Corto: <a href="/${j.code}">${j.shortUrl}</a> (código <b>${j.code}</b>)` : `Error: ${j.error}`;
+};
+const s = document.getElementById('s');
+s.onsubmit = async (e) => {
+  e.preventDefault();
+  const code = document.getElementById('code').value.trim();
+  const r = await fetch(`/api/links/${code}/stats`);
+  document.getElementById('stats').textContent = JSON.stringify(await r.json(), null, 2);
+};
+</script>
